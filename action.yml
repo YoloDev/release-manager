@@ -2,10 +2,16 @@ name: 'Release Manager'
 description: 'Manage GitHub releases'
 author: 'YoloDev'
 inputs:
+  token:
+    required: false
+    description: GitHub token
+    default: '${{ secrets.GITHUB_TOKEN }}'
+
   label:
     required: false
-    description: 'Github issue label to use to identify release issues'
+    description: GitHub issue label to use to identify release issues
     default: ':shipit: release'
+
 runs:
   using: 'node12'
   main: 'dist/index.js'
