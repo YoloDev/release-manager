@@ -1,19 +1,27 @@
-import * as core from '@actions/core'
-import {wait} from './wait'
+import * as core from '@actions/core';
+import { Octokit } from '@octokit/action';
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
+    const label: string = core.getInput('label');
+    core.info(`Checking that label ${label} exists`);
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY;
+    if (!GITHUB_REPOSITORY) {
+      throw new Error(`env.GITHUB_REPOSITORY not set`);
+    }
 
-    core.setOutput('time', new Date().toTimeString())
+    const octokit = new Octokit();
+    const [owner, repo] = GITHUB_REPOSITORY.split('/');
+
+    await octokit.issues.createLabel({
+      owner,
+      repo,
+      name: label,
+    });
   } catch (error) {
-    core.setFailed(error.message)
+    core.setFailed(error.message);
   }
 }
 
-run()
+run();

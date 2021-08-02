@@ -1,11 +1,11 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Release Manager'
+description: 'Manage GitHub releases'
+author: 'YoloDev'
 inputs:
-  milliseconds: # change this
-    required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+  label:
+    required: false
+    description: 'Github issue label to use to identify release issues'
+    default: ':shipit: release'
 runs:
   using: 'node12'
   main: 'dist/index.js'
