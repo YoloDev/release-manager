@@ -37,26 +37,61 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const action_1 = __nccwpck_require__(1231);
+const request_error_1 = __nccwpck_require__(537);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const label = core.getInput('label');
-            core.info(`Checking that label ${label} exists`);
+            const dryRun = core.getBooleanInput('dry-run');
             const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY;
             if (!GITHUB_REPOSITORY) {
                 throw new Error(`env.GITHUB_REPOSITORY not set`);
             }
             const octokit = new action_1.Octokit();
             const [owner, repo] = GITHUB_REPOSITORY.split('/');
-            yield octokit.issues.createLabel({
-                owner,
-                repo,
-                name: label,
-            });
+            core.info(`Checking that label ${label} exists`);
+            const labelExists = yield checkLabel(octokit, owner, repo, label);
+            if (!labelExists) {
+                if (dryRun)
+                    core.info(`Would create label '${label}'.`);
+                else
+                    yield createLabel(octokit, owner, repo, label);
+            }
         }
         catch (error) {
             core.setFailed(error.message);
         }
+    });
+}
+function checkLabel(octokit, owner, repo, label) {
+    return __awaiter(this, void 0, void 0, function* () {
+        core.info(`Checking that label ${label} exists`);
+        try {
+            yield octokit.issues.getLabel({
+                owner,
+                repo,
+                name: label,
+            });
+            return true;
+        }
+        catch (e) {
+            if (e instanceof request_error_1.RequestError) {
+                if (e.status !== 404) {
+                    return false;
+                }
+            }
+            throw e;
+        }
+    });
+}
+function createLabel(octokit, owner, repo, label) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield octokit.issues.createLabel({
+            owner,
+            repo,
+            name: label,
+        });
+        core.info(`Label '${label}' created.`);
     });
 }
 run();
