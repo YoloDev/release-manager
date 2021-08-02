@@ -1,7 +1,50 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 3109:
+/***/ 3842:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(2186));
+const action_1 = __nccwpck_require__(1231);
+const create = () => {
+    const label = core.getInput('label');
+    const dryRun = core.getBooleanInput('dry-run');
+    const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY;
+    if (!GITHUB_REPOSITORY) {
+        throw new Error(`env.GITHUB_REPOSITORY not set`);
+    }
+    const octokit = new action_1.Octokit({});
+    const [owner, repo] = GITHUB_REPOSITORY.split('/');
+    return Object.freeze({ octokit, owner, repo, label, dryRun });
+};
+exports.default = create;
+
+
+/***/ }),
+
+/***/ 6018:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -35,37 +78,90 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.findReleaseIssue = void 0;
 const core = __importStar(__nccwpck_require__(2186));
-const action_1 = __nccwpck_require__(1231);
-const request_error_1 = __nccwpck_require__(537);
-function run() {
+function findReleaseIssue(context) {
     return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const label = core.getInput('label');
-            const dryRun = core.getBooleanInput('dry-run');
-            const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY;
-            if (!GITHUB_REPOSITORY) {
-                throw new Error(`env.GITHUB_REPOSITORY not set`);
-            }
-            const octokit = new action_1.Octokit();
-            const [owner, repo] = GITHUB_REPOSITORY.split('/');
-            core.info(`Checking that label ${label} exists`);
-            const labelExists = yield checkLabel(octokit, owner, repo, label);
-            if (!labelExists) {
-                if (dryRun)
-                    core.info(`Would create label '${label}'.`);
-                else
-                    yield createLabel(octokit, owner, repo, label);
-            }
+        const { octokit, owner, repo, label } = context;
+        core.info(`Looking for open issues with label '${label}'.`);
+        const issuesResponse = yield octokit.issues.listForRepo({
+            owner,
+            repo,
+            labels: label,
+            state: 'open',
+            sort: 'created',
+            direction: 'desc',
+            per_page: 2,
+        });
+        const issues = issuesResponse.data;
+        if (issues.length === 0) {
+            core.info(`No open release issue found.`);
+            return null;
         }
-        catch (error) {
-            core.setFailed(error.message);
+        if (issues.length > 1) {
+            core.warning(`More than one open release issue found - using the one created most recently.`);
+        }
+        return issues[0];
+    });
+}
+exports.findReleaseIssue = findReleaseIssue;
+
+
+/***/ }),
+
+/***/ 7630:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ensureLabel = void 0;
+const core = __importStar(__nccwpck_require__(2186));
+const request_error_1 = __nccwpck_require__(537);
+function ensureLabel(context) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const labelExists = yield checkLabel(context);
+        if (!labelExists) {
+            yield createLabel(context);
+        }
+        else {
+            core.info(`Label '${context.label}' already exists.`);
         }
     });
 }
-function checkLabel(octokit, owner, repo, label) {
+exports.ensureLabel = ensureLabel;
+function checkLabel(context) {
     return __awaiter(this, void 0, void 0, function* () {
-        core.info(`Checking that label ${label} exists`);
+        const { octokit, owner, repo, label } = context;
+        core.info(`Checking that label '${label}' exists`);
         try {
             yield octokit.issues.getLabel({
                 owner,
@@ -84,14 +180,78 @@ function checkLabel(octokit, owner, repo, label) {
         }
     });
 }
-function createLabel(octokit, owner, repo, label) {
+function createLabel(context) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield octokit.issues.createLabel({
-            owner,
-            repo,
-            name: label,
-        });
+        const { octokit, owner, repo, label, dryRun } = context;
+        core.info(`Creating label '${label}'.`);
+        if (!dryRun) {
+            yield octokit.issues.createLabel({
+                owner,
+                repo,
+                name: label,
+            });
+        }
+        else {
+            core.info(`[dry-run]: create label '${label}'.`);
+        }
         core.info(`Label '${label}' created.`);
+    });
+}
+
+
+/***/ }),
+
+/***/ 3109:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(2186));
+const label = __importStar(__nccwpck_require__(7630));
+const issues = __importStar(__nccwpck_require__(6018));
+const context_1 = __importDefault(__nccwpck_require__(3842));
+function run() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const context = context_1.default();
+            yield label.ensureLabel(context);
+            yield issues.findReleaseIssue(context);
+        }
+        catch (error) {
+            core.setFailed(error.message);
+        }
     });
 }
 run();
