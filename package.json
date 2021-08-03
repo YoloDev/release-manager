@@ -29,7 +29,7 @@
     "@actions/core": "1.4.0",
     "@octokit/action": "3.13.0",
     "@octokit/request-error": "2.1.0",
-    "@octokit/rest": "18.8.0",
+    "@octokit/rest": "18.9.0",
     "@octokit/types": "6.23.0"
   },
   "devDependencies": {
