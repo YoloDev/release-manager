@@ -2,7 +2,8 @@ import * as core from '@actions/core';
 import { Context } from './context';
 import { Endpoints } from '@octokit/types';
 
-export type PullRequest = Endpoints['GET /repos/{owner}/{repo}/pulls']['response']['data'][0];
+export type PullRequest =
+  Endpoints['GET /repos/{owner}/{repo}/pulls']['response']['data'][0];
 
 export async function findReleasePr(
   context: Context,

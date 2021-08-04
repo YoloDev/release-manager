@@ -20,14 +20,14 @@ export async function ensureInstalled(version: string): Promise<string> {
       `https://github.com/aldrin/git-changelog/releases/download/v${version}/git-changelog-v${version}-osx.tar.gz`,
     );
     const dlDir = await tc.extractTar(dlPath);
-    const tool = path.join(dlDir, 'target', 'release', 'git-changelog');
+    const tool = path.join(dlDir, 'git-changelog');
     await tc.cacheFile(tool, 'git-changelog', 'git-changelog', version);
   } else {
     const dlPath = await tc.downloadTool(
       `https://github.com/aldrin/git-changelog/releases/download/v${version}/git-changelog-v${version}-linux.tar.gz`,
     );
     const dlDir = await tc.extractTar(dlPath);
-    const tool = path.join(dlDir, 'target', 'release', 'git-changelog');
+    const tool = path.join(dlDir, 'git-changelog');
     await tc.cacheFile(tool, 'git-changelog', 'git-changelog', version);
   }
 

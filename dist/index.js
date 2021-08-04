@@ -70,13 +70,13 @@ function ensureInstalled(version) {
         else if (IS_OSX) {
             const dlPath = yield tc.downloadTool(`https://github.com/aldrin/git-changelog/releases/download/v${version}/git-changelog-v${version}-osx.tar.gz`);
             const dlDir = yield tc.extractTar(dlPath);
-            const tool = path_1.default.join(dlDir, 'target', 'release', 'git-changelog');
+            const tool = path_1.default.join(dlDir, 'git-changelog');
             yield tc.cacheFile(tool, 'git-changelog', 'git-changelog', version);
         }
         else {
             const dlPath = yield tc.downloadTool(`https://github.com/aldrin/git-changelog/releases/download/v${version}/git-changelog-v${version}-linux.tar.gz`);
             const dlDir = yield tc.extractTar(dlPath);
-            const tool = path_1.default.join(dlDir, 'target', 'release', 'git-changelog');
+            const tool = path_1.default.join(dlDir, 'git-changelog');
             yield tc.cacheFile(tool, 'git-changelog', 'git-changelog', version);
         }
         toolDir = tc.find('git-changelog', version);
