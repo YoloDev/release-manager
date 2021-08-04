@@ -17,6 +17,25 @@ inputs:
     description: Whether to only simulate the changes applied by this action
     default: 'false'
 
+  branch:
+    required: false
+    description: Branch name for release branch
+    default: 'release/release-manager'
+
+  git-changelog-version:
+    required: false
+    description: Version of git-changelog to use
+    default: '0.3.1'
+
+  ref:
+    required: true
+    description: Current git ref
+    default: ${{ github.sha }}
+
+  last-release:
+    required: false
+    description: Last release version to use
+
 runs:
   using: 'node12'
   main: 'dist/index.js'

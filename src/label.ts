@@ -14,7 +14,7 @@ export async function ensureLabel(context: Context): Promise<void> {
 
 async function checkLabel(context: Context): Promise<boolean> {
   const { octokit, owner, repo, label } = context;
-  core.info(`Checking that label '${label}' exists`);
+  core.info(`Checking that label '${label}' exists.`);
 
   try {
     await octokit.issues.getLabel({
