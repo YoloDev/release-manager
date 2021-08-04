@@ -236,7 +236,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ensureLabel = void 0;
 const core = __importStar(__nccwpck_require__(2186));
-const request_error_1 = __nccwpck_require__(537);
 function ensureLabel(context) {
     return __awaiter(this, void 0, void 0, function* () {
         const labelExists = yield checkLabel(context);
@@ -262,10 +261,8 @@ function checkLabel(context) {
             return true;
         }
         catch (e) {
-            if (e instanceof request_error_1.RequestError) {
-                if (e.status !== 404) {
-                    return false;
-                }
+            if (e && e.status === 404) {
+                return false;
             }
             throw e;
         }
@@ -462,7 +459,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.findReleaseRef = void 0;
 const core = __importStar(__nccwpck_require__(2186));
-const request_error_1 = __nccwpck_require__(537);
 function findReleaseRef(context) {
     return __awaiter(this, void 0, void 0, function* () {
         const { lastRelease } = context;
@@ -488,10 +484,8 @@ function findLatestRelease(context) {
             return release.data;
         }
         catch (e) {
-            if (e instanceof request_error_1.RequestError) {
-                if (e.status !== 404) {
-                    return null;
-                }
+            if (e && e.status === 404) {
+                return null;
             }
             throw e;
         }
@@ -3818,7 +3812,7 @@ function _defineProperty(obj, key, value) {
   return obj;
 }
 
-const VERSION = "3.12.0";
+const VERSION = "3.14.1";
 
 const DEFAULTS = {
   authStrategy: authAction.createActionAuth,
@@ -5708,6 +5702,7 @@ const Endpoints = {
     }],
     compareCommits: ["GET /repos/{owner}/{repo}/compare/{base}...{head}"],
     compareCommitsWithBasehead: ["GET /repos/{owner}/{repo}/compare/{basehead}"],
+    createAutolink: ["POST /repos/{owner}/{repo}/autolinks"],
     createCommitComment: ["POST /repos/{owner}/{repo}/commits/{commit_sha}/comments"],
     createCommitSignatureProtection: ["POST /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures", {
       mediaType: {
@@ -5741,6 +5736,7 @@ const Endpoints = {
     deleteAccessRestrictions: ["DELETE /repos/{owner}/{repo}/branches/{branch}/protection/restrictions"],
     deleteAdminBranchProtection: ["DELETE /repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins"],
     deleteAnEnvironment: ["DELETE /repos/{owner}/{repo}/environments/{environment_name}"],
+    deleteAutolink: ["DELETE /repos/{owner}/{repo}/autolinks/{autolink_id}"],
     deleteBranchProtection: ["DELETE /repos/{owner}/{repo}/branches/{branch}/protection"],
     deleteCommitComment: ["DELETE /repos/{owner}/{repo}/comments/{comment_id}"],
     deleteCommitSignatureProtection: ["DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures", {
@@ -5797,6 +5793,7 @@ const Endpoints = {
       }
     }],
     getAppsWithAccessToProtectedBranch: ["GET /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/apps"],
+    getAutolink: ["GET /repos/{owner}/{repo}/autolinks/{autolink_id}"],
     getBranch: ["GET /repos/{owner}/{repo}/branches/{branch}"],
     getBranchProtection: ["GET /repos/{owner}/{repo}/branches/{branch}/protection"],
     getClones: ["GET /repos/{owner}/{repo}/traffic/clones"],
@@ -5840,6 +5837,7 @@ const Endpoints = {
     getWebhook: ["GET /repos/{owner}/{repo}/hooks/{hook_id}"],
     getWebhookConfigForRepo: ["GET /repos/{owner}/{repo}/hooks/{hook_id}/config"],
     getWebhookDelivery: ["GET /repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}"],
+    listAutolinks: ["GET /repos/{owner}/{repo}/autolinks"],
     listBranches: ["GET /repos/{owner}/{repo}/branches"],
     listBranchesForHeadCommit: ["GET /repos/{owner}/{repo}/commits/{commit_sha}/branches-where-head", {
       mediaType: {
@@ -6034,7 +6032,7 @@ const Endpoints = {
   }
 };
 
-const VERSION = "5.5.2";
+const VERSION = "5.7.0";
 
 function endpointsToMethods(octokit, endpointsMap) {
   const newMethods = {};

@@ -1,9 +1,9 @@
 import * as core from '@actions/core';
 import { Context } from './context';
 import { Endpoints } from '@octokit/types';
-import { RequestError } from '@octokit/request-error';
 
-export type Release = Endpoints['GET /repos/{owner}/{repo}/releases']['response']['data'][0];
+export type Release =
+  Endpoints['GET /repos/{owner}/{repo}/releases']['response']['data'][0];
 
 export async function findReleaseRef(context: Context): Promise<string | null> {
   const { lastRelease } = context;
@@ -25,10 +25,8 @@ async function findLatestRelease(context: Context): Promise<Release | null> {
     const release = await octokit.repos.getLatestRelease({ owner, repo });
     return release.data;
   } catch (e) {
-    if (e instanceof RequestError) {
-      if (e.status !== 404) {
-        return null;
-      }
+    if (e && e.status === 404) {
+      return null;
     }
 
     throw e;

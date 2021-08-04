@@ -1,6 +1,5 @@
 import * as core from '@actions/core';
 import { Context } from './context';
-import { RequestError } from '@octokit/request-error';
 
 export async function ensureLabel(context: Context): Promise<void> {
   const labelExists = await checkLabel(context);
@@ -24,10 +23,8 @@ async function checkLabel(context: Context): Promise<boolean> {
     });
     return true;
   } catch (e) {
-    if (e instanceof RequestError) {
-      if (e.status !== 404) {
-        return false;
-      }
+    if (e && e.status === 404) {
+      return false;
     }
 
     throw e;
