@@ -337,7 +337,7 @@ function run() {
         try {
             const context = context_1.default();
             const lastRelease = yield releases.findReleaseRef(context);
-            const rangeSpec = `${lastRelease}..${context.ref}`;
+            const rangeSpec = lastRelease === null ? context.ref : `${lastRelease}..${context.ref}`;
             const _changeLog = yield changelog.run(context.gitChangelogVersion, rangeSpec);
             yield label.ensureLabel(context);
             const pr = yield prs.findReleasePr(context);

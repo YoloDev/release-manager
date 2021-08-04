@@ -10,7 +10,8 @@ async function run(): Promise<void> {
     const context = createContext();
 
     const lastRelease = await releases.findReleaseRef(context);
-    const rangeSpec = `${lastRelease}..${context.ref}`;
+    const rangeSpec =
+      lastRelease === null ? context.ref : `${lastRelease}..${context.ref}`;
     const _changeLog = await changelog.run(
       context.gitChangelogVersion,
       rangeSpec,
