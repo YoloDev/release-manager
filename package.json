@@ -32,7 +32,7 @@
     "@actions/tool-cache": "1.7.1",
     "@octokit/action": "3.15.0",
     "@octokit/request-error": "2.1.0",
-    "@octokit/rest": "18.9.0",
+    "@octokit/rest": "18.9.1",
     "@octokit/types": "6.25.0"
   },
   "devDependencies": {
