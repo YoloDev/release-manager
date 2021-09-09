@@ -30,7 +30,7 @@
     "@actions/exec": "1.1.0",
     "@actions/io": "1.1.1",
     "@actions/tool-cache": "1.7.1",
-    "@octokit/action": "3.15.2",
+    "@octokit/action": "3.15.4",
     "@octokit/request-error": "2.1.0",
     "@octokit/rest": "18.10.0",
     "@octokit/types": "6.27.0"
